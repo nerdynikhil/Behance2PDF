@@ -1,0 +1,51 @@
+.behance2pdf-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  background-color: #0057ff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.behance2pdf-button:hover {
+  background-color: #003ecb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.behance2pdf-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.behance2pdf-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.behance2pdf-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.behance2pdf-loading::after {
+  content: "...";
+  animation: loading 1s infinite;
+}
+
+@keyframes loading {
+  0% { content: "."; }
+  33% { content: ".."; }
+  66% { content: "..."; }
+} 
