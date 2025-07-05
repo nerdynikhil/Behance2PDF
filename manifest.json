@@ -9,23 +9,23 @@
   ],
   "action": {
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
     }
   },
   "content_scripts": [{
     "matches": ["https://www.behance.net/gallery/*"],
     "js": [
-      "jszip.min.js",
-      "html2pdf.bundle.min.js",
-      "content.js"
+      "vendor/jszip.min.js",
+      "vendor/html2pdf.bundle.min.js",
+      "src/content.js"
     ],
-    "css": ["styles.css"]
+    "css": ["src/styles.css"]
   }],
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
   }
 } 
