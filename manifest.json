@@ -15,14 +15,15 @@
     }
   },
   "content_scripts": [{
-    "matches": ["https://www.behance.net/gallery/*"],
+    "matches": ["https://www.behance.net/*"],
     "js": [
       "vendor/jspdf.umd.min.js",
       "vendor/jszip.min.js",
       "vendor/html2pdf.bundle.min.js",
       "src/content.js"
     ],
-    "css": ["src/styles.css"]
+    "css": ["src/styles.css"],
+    "run_at": "document_idle"
   }],
   "icons": {
     "16": "assets/icons/icon16.png",

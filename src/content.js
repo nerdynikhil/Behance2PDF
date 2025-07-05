@@ -280,23 +280,142 @@ async function handlePDFGeneration(button) {
   }
 }
 
+// Helper to show a Behance-styled message
+function showBehanceMessage(message) {
+  // Remove any existing message
+  const existing = document.getElementById('behance2pdf-message');
+  if (existing) existing.remove();
+
+  const msg = document.createElement('div');
+  msg.id = 'behance2pdf-message';
+  msg.textContent = message;
+  msg.style.position = 'fixed';
+  msg.style.bottom = '120px';
+  msg.style.right = '30px';
+  msg.style.background = '#191919';
+  msg.style.color = '#fff';
+  msg.style.padding = '16px 28px';
+  msg.style.borderRadius = '12px';
+  msg.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
+  msg.style.fontSize = '1rem';
+  msg.style.fontWeight = '500';
+  msg.style.zIndex = '10000';
+  msg.style.letterSpacing = '0.01em';
+  msg.style.display = 'flex';
+  msg.style.alignItems = 'center';
+  msg.style.gap = '10px';
+  msg.style.transition = 'opacity 0.3s';
+  msg.style.opacity = '1';
+
+  // Behance blue accent bar
+  const accent = document.createElement('div');
+  accent.style.width = '6px';
+  accent.style.height = '32px';
+  accent.style.background = '#1769ff';
+  accent.style.borderRadius = '6px';
+  accent.style.marginRight = '16px';
+  msg.prepend(accent);
+
+  document.body.appendChild(msg);
+  setTimeout(() => {
+    msg.style.opacity = '0';
+    setTimeout(() => msg.remove(), 400);
+  }, 3000);
+}
+
+// SPA/overlay-aware button injection
+function ensureButtonsInjected() {
+  if (!document.querySelector('.behance2pdf-button-container')) {
+    console.log('Injecting Behance2PDF buttons...');
+    const { pdfButton, imagesButton } = createButtons();
+    // Add click handlers
+    pdfButton.addEventListener('click', () => {
+      if (!window.location.pathname.includes('/gallery/')) {
+        showBehanceMessage('Please open a project to use PDF export.');
+        return;
+      }
+      handlePDFGeneration(pdfButton);
+    });
+    imagesButton.addEventListener('click', () => {
+      if (!window.location.pathname.includes('/gallery/')) {
+        showBehanceMessage('Please open a project to download images.');
+        return;
+      }
+      downloadImagesAsZip(imagesButton);
+    });
+    console.log('Behance2PDF buttons injected successfully');
+  } else {
+    console.log('Behance2PDF buttons already exist');
+  }
+}
+
+// Listen for SPA navigation (popstate, pushState, replaceState)
+function listenForSpaNavigation() {
+  let lastUrl = location.href;
+  const checkUrlChange = () => {
+    console.log('URL changed from', lastUrl, 'to', location.href);
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      setTimeout(ensureButtonsInjected, 500); // Increased delay for DOM update
+    }
+  };
+  window.addEventListener('popstate', checkUrlChange);
+  // Monkey-patch pushState/replaceState
+  const origPushState = history.pushState;
+  history.pushState = function(...args) {
+    origPushState.apply(this, args);
+    setTimeout(() => window.dispatchEvent(new Event('popstate')), 100);
+  };
+  const origReplaceState = history.replaceState;
+  history.replaceState = function(...args) {
+    origReplaceState.apply(this, args);
+    setTimeout(() => window.dispatchEvent(new Event('popstate')), 100);
+  };
+}
+
+// MutationObserver to catch overlay/modal DOM changes
+function observeDomForOverlays() {
+  const observer = new MutationObserver((mutations) => {
+    let shouldCheck = false;
+    mutations.forEach(mutation => {
+      if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        // Check if any significant DOM changes occurred
+        for (let node of mutation.addedNodes) {
+          if (node.nodeType === 1 && (node.classList?.contains('ProjectPage') || node.querySelector?.('[data-id="project-title"]'))) {
+            shouldCheck = true;
+            break;
+          }
+        }
+      }
+    });
+    if (shouldCheck) {
+      console.log('DOM mutation detected, checking buttons...');
+      setTimeout(ensureButtonsInjected, 300);
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 // Initialize the extension
 function init() {
-  console.log('Initializing Behance2PDF extension...');
+  console.log('Initializing Behance2PDF extension on:', window.location.href);
   
-  // Only run on project pages
-  if (!window.location.pathname.includes('/gallery/')) {
-    console.log('Not a project page, skipping initialization');
-    return;
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        ensureButtonsInjected();
+        listenForSpaNavigation();
+        observeDomForOverlays();
+      }, 1000);
+    });
+  } else {
+    setTimeout(() => {
+      ensureButtonsInjected();
+      listenForSpaNavigation();
+      observeDomForOverlays();
+    }, 1000);
   }
-
-  // Create and inject the buttons
-  const { pdfButton, imagesButton } = createButtons();
-  console.log('Buttons created and injected');
-
-  // Add click handlers
-  pdfButton.addEventListener('click', () => handlePDFGeneration(pdfButton));
-  imagesButton.addEventListener('click', () => downloadImagesAsZip(imagesButton));
 }
 
 // Run initialization
