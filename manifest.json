@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Behance2PDF",
   "version": "1.0.0",
-  "description": "Save Behance projects as high-quality PDFs with original layout and images",
+  "description": "Save Behance projects as high-quality PDFs or download project images",
   "permissions": ["activeTab", "scripting", "downloads"],
   "host_permissions": [
     "https://www.behance.net/*"
@@ -16,7 +16,11 @@
   },
   "content_scripts": [{
     "matches": ["https://www.behance.net/gallery/*"],
-    "js": ["html2pdf.bundle.min.js", "content.js"],
+    "js": [
+      "jszip.min.js",
+      "html2pdf.bundle.min.js",
+      "content.js"
+    ],
     "css": ["styles.css"]
   }],
   "icons": {

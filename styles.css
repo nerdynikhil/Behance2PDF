@@ -1,8 +1,9 @@
+.behance2pdf-button-container {
+  display: flex;
+  gap: 10px;
+}
+
 .behance2pdf-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
   background-color: #0057ff;
   color: white;
   border: none;
@@ -16,6 +17,7 @@
   gap: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .behance2pdf-button:hover {
@@ -34,9 +36,10 @@
   height: 16px;
 }
 
-.behance2pdf-loading {
+.behance2pdf-button.behance2pdf-loading {
   opacity: 0.7;
   cursor: not-allowed;
+  background-color: #666;
 }
 
 .behance2pdf-loading::after {
