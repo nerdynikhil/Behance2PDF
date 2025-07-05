@@ -17,6 +17,7 @@
   "content_scripts": [{
     "matches": ["https://www.behance.net/gallery/*"],
     "js": [
+      "vendor/jspdf.umd.min.js",
       "vendor/jszip.min.js",
       "vendor/html2pdf.bundle.min.js",
       "src/content.js"

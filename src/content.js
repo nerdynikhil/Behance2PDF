@@ -1,3 +1,6 @@
+// Use jsPDF from the UMD bundle
+const { jsPDF } = window.jspdf;
+
 // Create and inject the buttons
 function createButtons() {
   const buttonContainer = document.createElement('div');
@@ -192,45 +195,53 @@ async function handlePDFGeneration(button) {
       throw new Error('No images found in the project');
     }
 
-    // Create container for images
-    const container = document.createElement('div');
-    container.style.padding = '20px';
-    container.style.backgroundColor = 'white';
-    container.style.maxWidth = '1200px';
-    container.style.margin = '0 auto';
+    // Dynamically get jsPDF from html2pdf bundle (already loaded)
+    const jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+    if (!jsPDF) throw new Error('jsPDF not found.');
 
-    // Add each image to the container
-    for (const { url } of images) {
+    // A4 size in mm
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    // Create a new PDF
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+
+    for (let i = 0; i < images.length; i++) {
+      const { url } = images[i];
+      // Fetch image as data URL
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+
+      // Create an image to get its dimensions
       const img = document.createElement('img');
-      img.src = url;
-      img.style.width = '100%';
-      img.style.height = 'auto';
-      img.style.marginBottom = '20px';
-      img.style.display = 'block';
-      container.appendChild(img);
+      img.src = dataUrl;
+      await new Promise((resolve) => { img.onload = resolve; });
+      let imgWidth = img.naturalWidth;
+      let imgHeight = img.naturalHeight;
+
+      // Validate image dimensions
+      if (!imgWidth || !imgHeight || isNaN(imgWidth) || isNaN(imgHeight) || imgWidth <= 0 || imgHeight <= 0) {
+        console.warn(`Skipping image due to invalid dimensions: ${url}`);
+        continue;
+      }
+
+      // Calculate dimensions to fit A4 while preserving aspect ratio
+      let ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+      let pdfWidth = imgWidth * ratio;
+      let pdfHeight = imgHeight * ratio;
+      let x = (pageWidth - pdfWidth) / 2;
+      let y = (pageHeight - pdfHeight) / 2;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(dataUrl, 'JPEG', x, y, pdfWidth, pdfHeight);
     }
 
-    // Generate PDF
-    const options = {
-      margin: 10,
-      filename: `${projectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
-      image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: true,
-        allowTaint: true,
-        imageTimeout: 0
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-        compress: true
-      }
-    };
-
-    await html2pdf().set(options).from(container).save();
+    pdf.save(`${projectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
 
     // Reset button state
     button.classList.remove('behance2pdf-loading');
