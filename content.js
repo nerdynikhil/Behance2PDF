@@ -3,7 +3,7 @@ function createButtons() {
   const buttonContainer = document.createElement('div');
   buttonContainer.className = 'behance2pdf-button-container';
   buttonContainer.style.position = 'fixed';
-  buttonContainer.style.bottom = '20px';
+  buttonContainer.style.bottom = '80px';
   buttonContainer.style.right = '20px';
   buttonContainer.style.zIndex = '9999';
   buttonContainer.style.display = 'flex';
