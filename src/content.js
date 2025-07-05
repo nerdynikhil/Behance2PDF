@@ -99,6 +99,23 @@ async function downloadImage(url) {
   }
 }
 
+// Helper to get normalized project name
+function getNormalizedProjectName() {
+  // Try to extract from <title> tag
+  const titleTag = document.title;
+  if (titleTag && titleTag.includes(':: Behance')) {
+    const projectName = titleTag.split(':: Behance')[0].trim();
+    if (projectName) {
+      return projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    }
+  }
+  // Fallback to previous logic
+  const titleElement = document.querySelector('[data-id="project-title"]') || 
+                      document.querySelector('.Project-title');
+  const projectTitle = titleElement ? titleElement.textContent.trim() : 'behance_project';
+  return projectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+}
+
 // Create and download zip file with images
 async function downloadImagesAsZip(button) {
   try {
@@ -107,10 +124,8 @@ async function downloadImagesAsZip(button) {
     button.disabled = true;
     button.textContent = 'Preparing Images...';
 
-    // Get project title for zip filename
-    const titleElement = document.querySelector('[data-id="project-title"]') || 
-                        document.querySelector('.Project-title');
-    const projectTitle = titleElement ? titleElement.textContent.trim() : 'behance_project';
+    // Use normalized project name for zip filename
+    const normalizedProjectName = getNormalizedProjectName();
     
     // Get all image URLs
     const images = getProjectImages();
@@ -142,7 +157,7 @@ async function downloadImagesAsZip(button) {
     const zipUrl = URL.createObjectURL(zipBlob);
     const link = document.createElement('a');
     link.href = zipUrl;
-    link.download = `${projectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_images.zip`;
+    link.download = `${normalizedProjectName}.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -183,11 +198,8 @@ async function handlePDFGeneration(button) {
     button.disabled = true;
     button.textContent = 'Generating PDF...';
 
-    // Get project title
-    const titleElement = document.querySelector('[data-id="project-title"]') || 
-                        document.querySelector('.Project-title');
-    const projectTitle = titleElement ? titleElement.textContent.trim() : 'behance_project';
-    console.log('Project title:', projectTitle);
+    // Use normalized project name for pdf filename
+    const normalizedProjectName = getNormalizedProjectName();
 
     // Get all images
     const images = getProjectImages();
@@ -241,7 +253,7 @@ async function handlePDFGeneration(button) {
       pdf.addImage(dataUrl, 'JPEG', x, y, pdfWidth, pdfHeight);
     }
 
-    pdf.save(`${projectTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+    pdf.save(`${normalizedProjectName}.pdf`);
 
     // Reset button state
     button.classList.remove('behance2pdf-loading');
