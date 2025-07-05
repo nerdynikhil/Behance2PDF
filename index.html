@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Behance2PDF - Save Behance Projects as PDF or Images</title>
+  <meta name="description" content="Save Behance projects as high-quality PDFs or download project images in one click. Free Chrome extension for designers and creatives.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0066ff;
+      --white: #fff;
+      --text: #f4f8ff;
+      --shadow: rgba(0,0,0,0.07);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--primary);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 32px 16px 0 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .promo-img {
+      width: 160px;
+      height: 160px;
+      margin-bottom: 24px;
+      object-fit: cover;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -1px;
+      color: var(--white);
+      text-align: center;
+    }
+    .tagline {
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-bottom: 28px;
+      text-align: center;
+      color: #eaf2ff;
+    }
+    .features {
+      width: 100%;
+      margin-bottom: 32px;
+      padding: 0;
+      list-style: none;
+    }
+    .features li {
+      font-size: 1.05rem;
+      margin: 0 0 14px 0;
+      padding-left: 1.2em;
+      position: relative;
+    }
+    .features li::before {
+      content: '•';
+      color: var(--white);
+      font-size: 1.2em;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--white);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--shadow);
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .cta-btn:hover {
+      background: #eaf2ff;
+      color: #003366;
+    }
+    .feedback {
+      margin-top: 12px;
+      font-size: 0.98rem;
+      color: #eaf2ff;
+      text-align: center;
+    }
+    .credit {
+      margin-top: auto;
+      font-size: 0.95rem;
+      color: #b3d1ff;
+      text-align: center;
+      padding-bottom: 18px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding-top: 18px;
+      }
+      .promo-img {
+        width: 120px;
+        height: 120px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="assets/icons/icon1024.png" alt="Behance2PDF logo" class="promo-img" />
+    <h1>Behance2PDF</h1>
+    <div class="tagline">Save Behance projects as PDFs or high-res images in one click</div>
+    <ul class="features">
+      <li>One-click save as PDF</li>
+      <li>Get high-quality content</li>
+      <li>Save images in bulk</li>
+      <li>Automatic file naming</li>
+      <li>Free & privacy-friendly</li>
+    </ul>
+    <a href="#" class="cta-btn" target="_blank" id="chrome-link">
+      <img src="https://www.google.com/chrome/static/images/chrome-logo-m100.svg" alt="Chrome logo" style="height:22px;width:auto;vertical-align:middle;margin-right:10px;display:inline-block;" />
+      Add to Chrome
+    </a>
+    <div class="feedback">
+      Have feedback or feature requests? <br>
+      <a href="#" id="store-link" style="color:#fff;text-decoration:underline;">Leave a review on the Chrome Web Store</a>
+    </div>
+    <div class="credit">
+      Made with <span style="color:#fff;">&#10084;&#65039;</span> by nerdynikhil
+    </div>
+  </div>
+  <script>
+    // Replace with your actual Chrome Web Store URL
+    const chromeStoreUrl = 'https://chrome.google.com/webstore/detail/behance2pdf/';
+    document.getElementById('chrome-link').href = chromeStoreUrl;
+    document.getElementById('store-link').href = chromeStoreUrl;
+  </script>
+</body>
+</html> 
