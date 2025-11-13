@@ -56,42 +56,125 @@ function getHighestResolutionUrl(srcset) {
 
 // Get all high-resolution image URLs from the page
 function getProjectImages() {
-  const projectModules = document.querySelectorAll('.ImageElement-root-kir, .ImageElement-blockPointerEvents-Rkg');
-  console.log(`Found ${projectModules.length} project modules`);
+  // Try different selectors to find all possible image containers
+  const selectors = [
+    '.ImageElement-root-kir', 
+    '.ImageElement-blockPointerEvents-Rkg',
+    'img[src*="behance"]',
+    '.js-project-image',
+    '.project-cover',
+    '.project-image'
+  ];
   
-  const images = [];
-  projectModules.forEach((module, index) => {
-    const img = module.querySelector('img');
-    if (img) {
-      const highResUrl = getHighestResolutionUrl(img.srcset) || 
-                        img.dataset.hiRes ||
-                        img.dataset.highRes ||
-                        img.src.replace('_webp', '').replace('1400', 'max_3840');
-      
-      // Extract file extension from URL
-      const extension = highResUrl.split('.').pop().split('?')[0];
-      
-      // Create a filename based on index and extension
-      const filename = `image_${String(index + 1).padStart(3, '0')}.${extension}`;
-      
-      images.push({ url: highResUrl, filename });
-    }
+  // Get all potential image elements
+  let imageElements = [];
+  selectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(el => {
+      if (el.tagName === 'IMG') {
+        imageElements.push(el);
+      } else {
+        // If it's a container, look for img tags inside
+        const imgs = el.getElementsByTagName('img');
+        if (imgs.length > 0) {
+          imageElements = [...imageElements, ...Array.from(imgs)];
+        }
+      }
+    });
   });
   
-  return images;
+  // Remove duplicates by src
+  const uniqueImages = [];
+  const seenUrls = new Set();
+  
+  imageElements.forEach(img => {
+    if (!img.src) return;
+    
+    // Try to get the highest resolution version
+    let imageUrl = getHighestResolutionUrl(img.srcset) || 
+                  img.dataset.hiRes ||
+                  img.dataset.highRes ||
+                  img.dataset.src ||
+                  img.src;
+    
+    // Clean up the URL
+    imageUrl = imageUrl
+      .replace('_webp', '')
+      .replace(/(\?|&)q=\d+/, '')  // Remove quality parameters
+      .replace(/(\?|&)fm=\w+/, ''); // Remove format parameters
+    
+    // Skip if we've already processed this URL
+    if (seenUrls.has(imageUrl)) return;
+    seenUrls.add(imageUrl);
+    
+    // Skip small or placeholder images
+    if (imageUrl.includes('placeholder') || 
+        imageUrl.includes('logo') || 
+        imageUrl.includes('avatar') ||
+        imageUrl.includes('icon')) {
+      return;
+    }
+    
+    // Extract file extension from URL
+    const extension = imageUrl.split('.').pop().split('?')[0].toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    
+    if (!validExtensions.some(ext => extension.startsWith(ext))) {
+      console.log('Skipping non-image URL:', imageUrl);
+      return;
+    }
+    
+    // Create a filename based on index and extension
+    const filename = `image_${String(uniqueImages.length + 1).padStart(3, '0')}.${extension}`;
+    
+    uniqueImages.push({ 
+      url: imageUrl, 
+      filename,
+      element: img
+    });
+  });
+  
+  console.log(`Found ${uniqueImages.length} unique images`);
+  return uniqueImages;
 }
 
 // Download an image and return as blob
 async function downloadImage(url) {
   try {
-    const response = await fetch(url, {
-      mode: 'cors',
+    // Create a new URL to handle any relative URLs
+    const absoluteUrl = new URL(url, window.location.href).href;
+    
+    // Try fetching with CORS mode first
+    try {
+      const response = await fetch(absoluteUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Origin': window.location.origin,
+          'Referer': 'https://www.behance.net/'
+        }
+      });
+      
+      if (response.ok) {
+        return await response.blob();
+      }
+    } catch (corsError) {
+      console.warn('CORS fetch failed, trying alternative method:', corsError);
+    }
+    
+    // If CORS fetch fails, try using the extension's background page as a proxy
+    const proxyUrl = `https://cors-anywhere.herokuapp.com/${absoluteUrl}`;
+    const response = await fetch(proxyUrl, {
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'Origin': window.location.origin
       }
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+    
     return await response.blob();
   } catch (error) {
     console.error('Error downloading image:', error);
