@@ -159,23 +159,41 @@ async function downloadImage(url) {
         return await response.blob();
       }
     } catch (corsError) {
-      console.warn('CORS fetch failed, trying alternative method:', corsError);
+      console.warn('CORS fetch failed, trying canvas-based approach:', corsError);
     }
     
-    // If CORS fetch fails, try using the extension's background page as a proxy
-    const proxyUrl = `https://cors-anywhere.herokuapp.com/${absoluteUrl}`;
-    const response = await fetch(proxyUrl, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Origin': window.location.origin
-      }
+    // If CORS fetch fails, use canvas-based approach (no remote code)
+    // This works because our extension has host_permissions for Behance domains
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to convert canvas to blob'));
+            }
+          }, 'image/jpeg', 0.95);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      
+      img.onerror = () => {
+        reject(new Error(`Failed to load image: ${absoluteUrl}`));
+      };
+      
+      img.src = absoluteUrl;
     });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-    }
-    
-    return await response.blob();
   } catch (error) {
     console.error('Error downloading image:', error);
     throw error;
