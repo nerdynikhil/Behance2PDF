@@ -21,11 +21,23 @@ Behance2PDF is a production-grade Chrome extension designed for creative profess
 
 ---
 
+## 🎥 Demo
+
+[![Behance2PDF Demo](https://img.youtube.com/vi/rSJaOjvNGz0/maxresdefault.jpg)](https://www.youtube.com/watch?v=rSJaOjvNGz0)
+
+---
+
 ## 🛠 Installation
 
-1. **Get Behance2PDF from the [Chrome Web Store](https://chrome.google.com/webstore/detail/behance2pdf/)**
-2. Pin the extension for quick access (optional)
-3. Visit any Behance project page and start saving!
+Behance2PDF is not published on the Chrome Web Store, so it's installed manually as an unpacked extension:
+
+1. Download the latest `Behance2PDF.zip` from the [Releases](https://github.com/nerdynikhil/Behance2PDF/releases) page.
+2. Unzip it to a folder you'll keep around (don't delete it after installing—Chrome loads the extension from this folder).
+3. Open `chrome://extensions` in Chrome.
+4. Enable **Developer mode** (toggle in the top-right corner).
+5. Click **Load unpacked** and select the unzipped folder.
+6. Pin the extension for quick access (optional)
+7. Visit any Behance project page and start saving!
 
 ---
 
@@ -39,9 +51,7 @@ Behance2PDF is a production-grade Chrome extension designed for creative profess
 
 ## 💬 Feedback & Support
 
-We value your feedback! If you have feature requests, bug reports, or ideas for improvement, please:
-- [Open an issue](https://github.com/nerdynikhil/Behance2PDF/issues)
-- Leave a review on the [Chrome Web Store](https://chrome.google.com/webstore/detail/behance2pdf/)
+We value your feedback! If you have feature requests, bug reports, or ideas for improvement, please [open an issue](https://github.com/nerdynikhil/Behance2PDF/issues).
 
 ---
 
