@@ -31,13 +31,15 @@ Behance2PDF is a production-grade Chrome extension designed for creative profess
 
 Behance2PDF is not published on the Chrome Web Store, so it's installed manually as an unpacked extension:
 
-1. Download the latest `Behance2PDF.zip` from the [Releases](https://github.com/nerdynikhil/Behance2PDF/releases) page.
+1. Download this repository as a ZIP: click the green **Code** button on GitHub and select **Download ZIP**.
 2. Unzip it to a folder you'll keep around (don't delete it after installing—Chrome loads the extension from this folder).
 3. Open `chrome://extensions` in Chrome.
 4. Enable **Developer mode** (toggle in the top-right corner).
 5. Click **Load unpacked** and select the unzipped folder.
 6. Pin the extension for quick access (optional)
 7. Visit any Behance project page and start saving!
+
+> 🎬 Prefer video? Watch the [step-by-step install walkthrough](assets/videos/install-steps.mp4).
 
 ---
 
