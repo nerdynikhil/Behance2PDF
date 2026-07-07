@@ -39,7 +39,9 @@ Behance2PDF is not published on the Chrome Web Store, so it's installed manually
 6. Pin the extension for quick access (optional)
 7. Visit any Behance project page and start saving!
 
-> 🎬 Prefer video? Watch the [step-by-step install walkthrough](assets/videos/install-steps.mp4).
+> 🎬 Prefer video? Watch the step-by-step install walkthrough below.
+
+<video src="assets/videos/install-steps.mp4" controls autoplay muted loop width="720"></video>
 
 ---
 
